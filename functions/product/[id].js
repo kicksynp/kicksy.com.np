@@ -1,5 +1,6 @@
 const GOOGLE_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbzu3uYx0kod5wzwmM3IDq7KyrGKGifucd3GEUiaM0yV0JpCBxUPmgvWY_NoplHwyqe-hg/exec";
+
 const SITE_URL = "https://kicksy.com.np";
 const SITE_NAME = "Kicksy Nepal";
 const FALLBACK_IMAGE = `${SITE_URL}/assets/images/og-image.png`;
@@ -11,32 +12,93 @@ async function fetchProduct(id) {
   const res = await fetch(url, {
     cf: { cacheTtl: 300, cacheEverything: true },
   });
+
   if (!res.ok) throw new Error(`API ${res.status}`);
+
   const json = await res.json();
-  if (!json.success || !json.data) throw new Error("Not found");
+  if (!json || !json.success || !json.data) throw new Error("Product not found");
+
   return json.data;
 }
 
-function buildCrawlerImageUrl(imageUrl) {
+function firstValue(...values) {
+  for (const value of values) {
+    if (Array.isArray(value) && value.length) return value[0];
+    if (typeof value === "string" && value.trim()) return value.trim();
+    if (value !== undefined && value !== null && !Array.isArray(value)) return value;
+  }
+  return "";
+}
+
+function getProductName(product) {
+  return String(
+    firstValue(product.name, product.productName, product.title, product.Name, product["Product Name"]),
+  );
+}
+
+function getProductBrand(product) {
+  return String(firstValue(product.brand, product.Brand, product.category, product.Category));
+}
+
+function getProductDescription(product) {
+  return String(
+    firstValue(
+      product.shortDescription,
+      product.description,
+      product.ShortDescription,
+      product.Description,
+      product.details,
+      FALLBACK_DESC,
+    ),
+  );
+}
+
+function getProductImage1(product) {
+  return String(
+    firstValue(
+      product.image1,
+      product.Image1,
+      product.image,
+      product.Image,
+      product.mainImage,
+      product.MainImage,
+      product.ogImage,
+      product.images,
+      FALLBACK_IMAGE,
+    ),
+  );
+}
+
+function toAbsoluteImageUrl(imageUrl) {
   if (!imageUrl) return FALLBACK_IMAGE;
+
   try {
-    const u = new URL(imageUrl);
+    const u = new URL(imageUrl, SITE_URL);
+
+    // For ImageKit-hosted product images, force a crawler-friendly JPG square.
+    // WhatsApp/Facebook/Twitter prefer absolute, public, non-login image URLs.
     if (u.hostname.includes("imagekit.io")) {
-      return `${u.origin}${u.pathname}?tr=f-jpg,w-1200,h-1200,fo-auto`;
+      u.search = "?tr=f-jpg,w-1200,h-1200,fo-auto,q-90";
     }
-  } catch {}
-  return imageUrl;
+
+    return u.toString();
+  } catch {
+    return FALLBACK_IMAGE;
+  }
 }
 
 function rewriteMeta(assetRes, id, product) {
+  const productName = getProductName(product) || "Product";
+  const brand = getProductBrand(product);
   const canonicalUrl = `${SITE_URL}/product/${encodeURIComponent(id)}`;
-  const title = `${product.name} — ${product.brand} | ${SITE_NAME}`;
-  const description =
-    product.shortDescription || product.description || FALLBACK_DESC;
-  const image = buildCrawlerImageUrl(product.image1);
-  const imageAlt = `${product.name} by ${product.brand}`;
+  const title = brand
+    ? `${productName} — ${brand} | ${SITE_NAME}`
+    : `${productName} | ${SITE_NAME}`;
+  const description = getProductDescription(product);
+  const image = toAbsoluteImageUrl(getProductImage1(product));
+  const imageAlt = brand ? `${productName} by ${brand}` : productName;
 
-  return new HTMLRewriter()
+  const rewriter = new HTMLRewriter()
     .on("title", {
       element(el) {
         el.setInnerContent(title);
@@ -51,70 +113,35 @@ function rewriteMeta(assetRes, id, product) {
       element(el) {
         const name = el.getAttribute("name") || "";
         const property = el.getAttribute("property") || "";
-        if (name === "description") {
-          el.setAttribute("content", description);
-          return;
-        }
-        if (name === "twitter:card") {
-          el.setAttribute("content", "summary_large_image");
-          return;
-        }
-        if (name === "twitter:title") {
-          el.setAttribute("content", title);
-          return;
-        }
-        if (name === "twitter:description") {
-          el.setAttribute("content", description);
-          return;
-        }
-        if (name === "twitter:image") {
-          el.setAttribute("content", image);
-          return;
-        }
-        if (name === "twitter:image:alt") {
-          el.setAttribute("content", imageAlt);
-          return;
-        }
-        if (property === "og:title") {
-          el.setAttribute("content", title);
-          return;
-        }
-        if (property === "og:description") {
-          el.setAttribute("content", description);
-          return;
-        }
-        if (property === "og:url") {
-          el.setAttribute("content", canonicalUrl);
-          return;
-        }
-        if (property === "og:type") {
-          el.setAttribute("content", "product");
-          return;
-        }
-        if (property === "og:image") {
-          el.setAttribute("content", image);
-          return;
-        }
-        if (property === "og:image:secure_url") {
-          el.setAttribute("content", image);
-          return;
-        }
-        if (property === "og:image:alt") {
-          el.setAttribute("content", imageAlt);
-          return;
-        }
-        if (property === "og:image:type") {
-          el.setAttribute("content", "image/jpeg");
-          return;
-        }
-        if (property === "og:image:width") {
-          el.setAttribute("content", "1200");
-          return;
-        }
-        if (property === "og:image:height") {
-          el.setAttribute("content", "1200");
-          return;
-        }
+
+        if (name === "description") el.setAttribute("content", description);
+        if (name === "twitter:card") el.setAttribute("content", "summary_large_image");
+        if (name === "twitter:title") el.setAttribute("content", title);
+        if (name === "twitter:description") el.setAttribute("content", description);
+        if (name === "twitter:image") el.setAttribute("content", image);
+        if (name === "twitter:image:alt") el.setAttribute("content", imageAlt);
+
+        if (property === "og:title") el.setAttribute("content", title);
+        if (property === "og:description") el.setAttribute("content", description);
+        if (property === "og:url") el.setAttribute("content", canonicalUrl);
+        if (property === "og:type") el.setAttribute("content", "product");
+        if (property === "og:image") el.setAttribute("content", image);
+        if (property === "og:image:url") el.setAttribute("content", image);
+        if (property === "og:image:secure_url") el.setAttribute("content", image);
+        if (property === "og:image:alt") el.setAttribute("content", imageAlt);
+        if (property === "og:image:type") el.setAttribute("content", "image/jpeg");
+        if (property === "og:image:width") el.setAttribute("content", "1200");
+        if (property === "og:image:height") el.setAttribute("content", "1200");
+      },
+    })
+    .on("head", {
+      element(el) {
+        // Add these in case product.html does not already contain them.
+        el.append(
+          `\n<meta property="og:image:url" content="${image}">\n` +
+            `<meta property="product:brand" content="${brand}">\n`,
+          { html: true },
+        );
       },
     })
     .on("body", {
@@ -124,8 +151,17 @@ function rewriteMeta(assetRes, id, product) {
           { html: true },
         );
       },
-    })
-    .transform(assetRes);
+    });
+
+  const response = rewriter.transform(assetRes);
+  const headers = new Headers(response.headers);
+  headers.set("Cache-Control", "public, max-age=300, s-maxage=300");
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
 }
 
 export async function onRequest(context) {
@@ -134,24 +170,24 @@ export async function onRequest(context) {
 
   if (!id) return Response.redirect(`${SITE_URL}/shop`, 302);
 
-  // Fetch product.html from the Pages asset pipeline using env.ASSETS.
-  // env.ASSETS is automatically available in all Cloudflare Pages
-  // Functions — no wrangler.toml or dashboard config needed.
-  const assetUrl = new URL("/product.html", request.url).toString();
-  const assetRequest = new Request(assetUrl, { method: "GET" });
+  const assetRequest = new Request(new URL("/product.html", request.url), {
+    method: "GET",
+  });
 
-  const [assetRes, product] = await Promise.all([
+  const [assetRes, productResult] = await Promise.allSettled([
     env.ASSETS.fetch(assetRequest),
-    fetchProduct(id).catch(() => null),
+    fetchProduct(id),
   ]);
 
-  // Asset fetch failed — should never happen but guard anyway
-  if (!assetRes.ok) {
-    return new Response("Not found", { status: 404 });
+  if (assetRes.status !== "fulfilled" || !assetRes.value.ok) {
+    return new Response("Product template not found", { status: 404 });
   }
 
-  // Product API failed — serve plain product.html, page JS will load it
-  if (!product) return assetRes;
+  // If product lookup fails, serve the page so users still see the client-side product.
+  // But OG image will only be product-specific when this function can fetch the product data.
+  if (productResult.status !== "fulfilled") {
+    return assetRes.value;
+  }
 
-  return rewriteMeta(assetRes, id, product);
+  return rewriteMeta(assetRes.value, id, productResult.value);
 }

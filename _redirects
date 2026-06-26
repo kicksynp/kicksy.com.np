@@ -1,4 +1,4 @@
-# Cloudflare Pages static fallback for clean product URLs.
-# This makes /product/PRODUCT_ID serve product.html instead of 404.
-/product/*  /product.html  200
-/product    /product.html  200
+# IMPORTANT:
+# Do NOT add this rule: /product/* /product.html 200
+# Product detail URLs must be handled by Cloudflare Pages Functions so
+# WhatsApp/Facebook/Twitter can read product-specific OG meta tags.

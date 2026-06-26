@@ -1,18 +1,23 @@
-// Redirect legacy /product?id=xxx links to the new clean URL /product/xxx
-// This ensures old shared links still work after the URL format change.
+const SITE_URL = "https://kicksy.com.np";
+
 export async function onRequest(context) {
-  const { request, next } = context;
+  const { request, env } = context;
   const url = new URL(request.url);
   const id = url.searchParams.get("id");
 
-  // If there's an id param, redirect to the clean URL permanently
+  // Legacy links like /product?id=abc should become /product/abc.
+  // Use 302 while testing so old 301 cache does not lock the wrong behavior.
   if (id) {
     return Response.redirect(
-      `https://kicksy.com.np/product/${encodeURIComponent(id)}`,
-      301,
+      `${SITE_URL}/product/${encodeURIComponent(id)}`,
+      302,
     );
   }
 
-  // No id — serve product.html as-is
-  return next();
+  // /product without an id should still show product.html or redirect to shop.
+  const assetRequest = new Request(new URL("/product.html", request.url), {
+    method: "GET",
+  });
+
+  return env.ASSETS.fetch(assetRequest);
 }
