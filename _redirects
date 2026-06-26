@@ -1,0 +1,25 @@
+# Cloudflare Pages redirects/rewrites — clean URL support
+#
+# Cloudflare Pages serves .html files at their extensionless path
+# automatically in most cases, but this file makes the behavior
+# explicit and guarantees it works even if that default ever changes,
+# if the project is later moved behind a Worker/Function, or if
+# another static host (Netlify also reads this same _redirects
+# format) is used instead.
+#
+# Format: source  destination  status-code
+# A 200 status means "rewrite" (serve this file, keep the URL the
+# user sees as-is) rather than "redirect" (which would change the
+# URL in the address bar back to .html — the opposite of what we want).
+
+/about      /about.html      200
+/shop       /shop.html        200
+/leather    /leather.html     200
+/contact    /contact.html     200
+/product    /product.html     200
+/terms      /terms.html       200
+
+# Catch-all: if nothing above or no static file matches, fall back to
+# the custom 404 page (Cloudflare Pages already does this by default,
+# but it's made explicit here too).
+/*    /404.html   404

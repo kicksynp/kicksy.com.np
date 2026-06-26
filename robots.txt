@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Note: JS files must remain crawlable — this site renders product
+# content dynamically via JavaScript, and blocking /assets/js/ would
+# prevent Googlebot from indexing shop and product pages correctly.
+
+Sitemap: https://kicksy.com.np/sitemap.xml

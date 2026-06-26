@@ -1,0 +1,24 @@
+{
+  "name": "Kicksy Nepal — Premium Shoes, Affordable Prices",
+  "short_name": "Kicksy Nepal",
+  "description": "Premium quality footwear at affordable prices. Nationwide delivery across Nepal.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F7F1E8",
+  "theme_color": "#0F0F0F",
+  "icons": [
+    {
+      "src": "/assets/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
