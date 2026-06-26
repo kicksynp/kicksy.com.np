@@ -5,12 +5,6 @@
     "/product/*"
   ],
   "exclude": [
-    "/assets/*",
-    "/assets/css/*",
-    "/assets/js/*",
-    "/assets/images/*",
-    "/assets/videos/*",
-    "/assets/favicon/*",
-    "/assets/favicon-leather/*"
+    "/assets/*"
   ]
 }
