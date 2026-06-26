@@ -128,30 +128,49 @@ function rewriteMeta(assetRes, id, product) {
     .transform(assetRes);
 }
 
-export async function onRequest(context) {
-  const { request, env, params } = context;
-  const id = params.id;
-
-  if (!id) return Response.redirect(`${SITE_URL}/shop`, 302);
-
-  // Fetch product.html from the Pages asset pipeline using env.ASSETS.
-  // env.ASSETS is automatically available in all Cloudflare Pages
-  // Functions — no wrangler.toml or dashboard config needed.
+async function fetchProductHtml(request, env) {
   const assetUrl = new URL("/product.html", request.url).toString();
   const assetRequest = new Request(assetUrl, { method: "GET" });
 
+  // Cloudflare Pages Functions provides env.ASSETS. A Worker in front of
+  // GitHub Pages does not, so fall back to fetching /product.html from origin.
+  if (env && env.ASSETS && typeof env.ASSETS.fetch === "function") {
+    return env.ASSETS.fetch(assetRequest);
+  }
+
+  return fetch(assetRequest);
+}
+
+export async function onRequest(context) {
+  const { request, env, params } = context;
+  const rawId = params && params.id;
+  const id = Array.isArray(rawId) ? rawId.join("/") : rawId;
+
+  if (!id) return Response.redirect(`${SITE_URL}/shop`, 302);
+
   const [assetRes, product] = await Promise.all([
-    env.ASSETS.fetch(assetRequest),
+    fetchProductHtml(request, env),
     fetchProduct(id).catch(() => null),
   ]);
 
-  // Asset fetch failed — should never happen but guard anyway
   if (!assetRes.ok) {
-    return new Response("Not found", { status: 404 });
+    return new Response("Product page template not found", { status: 404 });
   }
 
-  // Product API failed — serve plain product.html, page JS will load it
-  if (!product) return assetRes;
+  // Product API failed — still serve product.html and inject the ID so the
+  // browser-side product script can load the product normally.
+  if (!product) {
+    return new HTMLRewriter()
+      .on("body", {
+        element(el) {
+          el.append(
+            `<script>window.__PRODUCT_ID__ = ${JSON.stringify(id)};</script>`,
+            { html: true },
+          );
+        },
+      })
+      .transform(assetRes);
+  }
 
   return rewriteMeta(assetRes, id, product);
 }
