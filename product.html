@@ -723,6 +723,20 @@
     <script src="/assets/js/api.js"></script>
     <script src="/assets/js/main.js"></script>
     <script src="/assets/js/forms.js"></script>
+    <script>
+      // Static-host fallback: when /product/PRODUCT_ID is rewritten to this
+      // file without Cloudflare Functions, expose the product id to product.js.
+      (function () {
+        if (window.__PRODUCT_ID__) return;
+        var parts = window.location.pathname.split('/').filter(Boolean);
+        if (parts[0] === 'product' && parts[1]) {
+          window.__PRODUCT_ID__ = decodeURIComponent(parts.slice(1).join('/'));
+          return;
+        }
+        var id = new URLSearchParams(window.location.search).get('id');
+        if (id) window.__PRODUCT_ID__ = id;
+      })();
+    </script>
     <script src="/assets/js/product.js"></script>
     <script src="/assets/js/seo.js"></script>
   </body>

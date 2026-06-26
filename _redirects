@@ -1,4 +1,4 @@
-# Static fallback for clean product URLs when Cloudflare Functions are not used.
-# If Cloudflare Pages Functions are deployed, /functions/product/[id].js handles /product/:id.
+# Cloudflare Pages static fallback for clean product URLs.
+# This makes /product/PRODUCT_ID serve product.html instead of 404.
 /product/*  /product.html  200
 /product    /product.html  200

@@ -2,16 +2,27 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Redirecting…</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redirecting… | Kicksy Nepal</title>
     <script>
       (function () {
         var path = window.location.pathname;
-        if (path.indexOf('/product/') === 0) {
-          var id = path.replace(/^\/product\//, '');
-          window.location.replace('/product.html?id=' + encodeURIComponent(id));
+        var search = window.location.search || "";
+
+        // Last-resort fallback for GitHub Pages or any static host that sends
+        // /product/PRODUCT_ID to 404.html instead of rewriting it server-side.
+        if (path.indexOf("/product/") === 0) {
+          var id = path.replace(/^\/product\//, "");
+          window.location.replace("/product.html?id=" + encodeURIComponent(id));
           return;
         }
-        window.location.replace('/');
+
+        if (path === "/product" && search) {
+          window.location.replace("/product.html" + search);
+          return;
+        }
+
+        window.location.replace("/");
       })();
     </script>
   </head>
