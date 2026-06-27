@@ -32,11 +32,12 @@ const CONFIG = {
 
   // ── Social media ──────────────────────────────────────────
   INSTAGRAM_URL: "https://instagram.com/kicksy.np",
-  INSTAGRAM_LEATHER_URL: "https://www.instagram.com/kleather.np/", // Kept original as it wasn't in CSV
+  INSTAGRAM_LEATHER_URL: "https://www.instagram.com/kleather.np/",
   TIKTOK_URL: "https://tiktok.com/@kicksy.np",
-  TIKTOK_LEATHER_URL: "https://www.tiktok.com/@kleather.np?lang=en", // Kept original as it wasn't in CSV
+  TIKTOK_LEATHER_URL: "https://www.tiktok.com/@kleather.np?lang=en",
   FACEBOOK_URL: "https://facebook.com/kicksy.np",
   YOUTUBE_URL: "https://www.youtube.com/@kicksynp",
+  PINTEREST_URL: "https://pinterest.com/kicksynp",
 
   // ── Contact ───────────────────────────────────────────────
   EMAIL: "info@kicksy.com.np",

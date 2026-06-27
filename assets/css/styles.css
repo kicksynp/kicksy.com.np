@@ -4854,7 +4854,6 @@ body {
 .img-lightbox-close:hover {
   background: rgba(255, 255, 255, .22);
 }
-
 /* ════════════════════════════════════════════════════════════
    MARQUEE — mobile font size fix
    The banner base font-size (var(--text-xs)) already looks fine
@@ -4863,14 +4862,12 @@ body {
    small screens and restore it from 768px up.
    ════════════════════════════════════════════════════════════ */
 .coupon-text {
-  font-size: 10px;
-  /* slightly smaller than --text-xs on mobile */
+  font-size: 10px; /* slightly smaller than --text-xs on mobile */
 }
 
 @media (min-width: 768px) {
   .coupon-text {
-    font-size: var(--text-xs);
-    /* restore to normal on desktop/tablet */
+    font-size: var(--text-xs); /* restore to normal on desktop/tablet */
   }
 }
 
@@ -4892,12 +4889,10 @@ body {
   transition: opacity 220ms ease;
   pointer-events: none;
 }
-
 #kicksyPageLoader.kpl-visible {
   opacity: 1;
   pointer-events: auto;
 }
-
 #kicksyPageLoader.kpl-hiding {
   opacity: 0;
   pointer-events: none;
@@ -4925,10 +4920,9 @@ body {
   border-radius: 50%;
   border: 2px solid transparent;
   border-top-color: var(--kpl-accent, #B58A5A);
-  border-right-color: var(--kpl-ring, rgba(181, 138, 90, 0.3));
+  border-right-color: var(--kpl-ring, rgba(181,138,90,0.3));
   animation: kplSpin 1.1s linear infinite;
 }
-
 .kpl-ring::after {
   content: "";
   position: absolute;
@@ -4951,12 +4945,10 @@ body {
   align-items: center;
   justify-content: center;
 }
-
 .kpl-icon svg {
   width: 100%;
   height: 100%;
 }
-
 .kpl-icon img.kpl-favicon {
   width: 100%;
   height: 100%;
@@ -4964,9 +4956,7 @@ body {
   border-radius: 6px;
 }
 
-#kicksyPageLoader[data-context="brand"] .kpl-icon {
-  width: 44px;
-}
+#kicksyPageLoader[data-context="brand"] .kpl-icon { width: 44px; }
 
 .kpl-label {
   color: rgba(255, 255, 255, 0.45);
@@ -4985,7 +4975,6 @@ body {
   border-radius: 1px;
   overflow: hidden;
 }
-
 .kpl-bar {
   height: 100%;
   width: 0%;
@@ -4994,81 +4983,18 @@ body {
   animation: kplProgress 1.4s ease-in-out infinite;
 }
 
-@keyframes kplSpin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes kplPulse {
-
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-
-  50% {
-    transform: scale(0.92);
-    opacity: 0.75;
-  }
-}
-
-@keyframes kplFade {
-  from {
-    opacity: 0.3;
-  }
-
-  to {
-    opacity: 0.65;
-  }
-}
-
-@keyframes kplProgress {
-  0% {
-    width: 0%;
-    margin-left: 0%;
-  }
-
-  50% {
-    width: 60%;
-    margin-left: 20%;
-  }
-
-  100% {
-    width: 0%;
-    margin-left: 100%;
-  }
-}
+@keyframes kplSpin     { to { transform: rotate(360deg); } }
+@keyframes kplPulse    { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.92); opacity: 0.75; } }
+@keyframes kplFade     { from { opacity: 0.3; } to { opacity: 0.65; } }
+@keyframes kplProgress { 0% { width: 0%; margin-left: 0%; } 50% { width: 60%; margin-left: 20%; } 100% { width: 0%; margin-left: 100%; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .kpl-ring {
-    animation: none;
-    border-top-color: var(--kpl-accent);
-  }
-
-  .kpl-ring::after {
-    animation: none;
-  }
-
-  .kpl-icon {
-    animation: none;
-  }
-
-  .kpl-bar {
-    animation: none;
-    width: 40%;
-    margin-left: 30%;
-  }
-
-  .kpl-label {
-    animation: none;
-    opacity: 0.5;
-  }
-
-  #kicksyPageLoader {
-    transition: opacity 80ms ease;
-  }
+  .kpl-ring        { animation: none; border-top-color: var(--kpl-accent); }
+  .kpl-ring::after { animation: none; }
+  .kpl-icon        { animation: none; }
+  .kpl-bar         { animation: none; width: 40%; margin-left: 30%; }
+  .kpl-label       { animation: none; opacity: 0.5; }
+  #kicksyPageLoader { transition: opacity 80ms ease; }
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -5120,9 +5046,9 @@ body {
   cursor: pointer;
   text-decoration: none;
   transition: background var(--dur) var(--ease),
-    color var(--dur) var(--ease),
-    border-color var(--dur) var(--ease),
-    transform var(--dur) var(--ease);
+              color var(--dur) var(--ease),
+              border-color var(--dur) var(--ease),
+              transform var(--dur) var(--ease);
   white-space: nowrap;
   font-family: inherit;
 }
@@ -5139,15 +5065,15 @@ body {
   color: #fff;
 }
 
-.product-share-fb:hover,
-.product-share-fb:focus-visible {
-  background: #1877F2;
+.product-share-messenger:hover,
+.product-share-messenger:focus-visible {
+  background: #0084FF;
   color: #fff;
 }
 
-.product-share-x:hover,
-.product-share-x:focus-visible {
-  background: #000;
+.product-share-pin:hover,
+.product-share-pin:focus-visible {
+  background: #E60023;
   color: #fff;
 }
 
@@ -5174,8 +5100,8 @@ body {
   .product-share-btn span {
     display: none;
   }
-
   .product-share-btn {
     padding: 7px 9px;
   }
 }
+
