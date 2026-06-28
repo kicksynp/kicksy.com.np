@@ -41,17 +41,20 @@
       property="og:image"
       content="https://kicksy.com.np/assets/images/og-image.png"
     />
-    <meta property="og:image:secure_url" content="https://kicksy.com.np/assets/images/og-image.png" />
-    <meta property="og:image:type"   content="image/png" />
-    <meta property="og:image:alt"    content="Kicksy Nepal product" />
-    <meta property="og:image:width"  content="1200" />
+    <meta
+      property="og:image:secure_url"
+      content="https://kicksy.com.np/assets/images/og-image.png"
+    />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content="Kicksy Nepal product" />
+    <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="1200" />
-    <meta property="og:url"          content="https://kicksy.com.np/product" />
-    <meta property="og:type"         content="product" />
-    <meta property="og:site_name"    content="Kicksy Nepal" />
-    <meta property="og:locale"       content="en_US" />
-    <meta name="twitter:card"        content="summary_large_image" />
-    <meta name="twitter:title"       content="Product | Kicksy Nepal" />
+    <meta property="og:url" content="https://kicksy.com.np/product" />
+    <meta property="og:type" content="product" />
+    <meta property="og:site_name" content="Kicksy Nepal" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Product | Kicksy Nepal" />
     <meta
       name="twitter:description"
       content="Premium footwear — shop online in Nepal with WhatsApp ordering."
@@ -60,7 +63,7 @@
       name="twitter:image"
       content="https://kicksy.com.np/assets/images/og-image.png"
     />
-    <meta name="twitter:image:alt"   content="Kicksy Nepal product" />
+    <meta name="twitter:image:alt" content="Kicksy Nepal product" />
     <meta name="robots" content="index, follow" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -73,6 +76,20 @@
     <!-- Formspree CAPTCHA: hCaptcha widget script -->
     <!-- Formspree CAPTCHA: Google reCAPTCHA v2 widget script -->
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-ZEEGKV81TT"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-ZEEGKV81TT");
+    </script>
   </head>
   <body>
     <header class="site-header" role="banner">
@@ -747,12 +764,12 @@
       // file without Cloudflare Functions, expose the product id to product.js.
       (function () {
         if (window.__PRODUCT_ID__) return;
-        var parts = window.location.pathname.split('/').filter(Boolean);
-        if (parts[0] === 'product' && parts[1]) {
-          window.__PRODUCT_ID__ = decodeURIComponent(parts.slice(1).join('/'));
+        var parts = window.location.pathname.split("/").filter(Boolean);
+        if (parts[0] === "product" && parts[1]) {
+          window.__PRODUCT_ID__ = decodeURIComponent(parts.slice(1).join("/"));
           return;
         }
-        var id = new URLSearchParams(window.location.search).get('id');
+        var id = new URLSearchParams(window.location.search).get("id");
         if (id) window.__PRODUCT_ID__ = id;
       })();
     </script>
