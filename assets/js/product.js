@@ -86,6 +86,7 @@ const ProductPage = (() => {
     renderProduct();
     loadRelated();
     updateSEO();
+    loadViewCount(id);
   }
 
   // ── Skeleton ───────────────────────────────────────────────
@@ -256,7 +257,7 @@ const ProductPage = (() => {
         </div>
 
         <div>
-          ${starsHTML(product.rating)} <span style="font-size:.8rem;color:var(--secondary);margin-left:6px">(${product.reviewCount} reviews)</span>
+          ${starsHTML(product.rating)} <span style="font-size:.8rem;color:var(--secondary);margin-left:6px">(${product.reviewCount} reviews)</span><span class="product-view-sep" aria-hidden="true"> • </span><span class="product-view-count" id="productViewCount" aria-label="View count"></span>
         </div>
 
         ${product.shortDescription ? `<p class="product-description">${esc(product.shortDescription)}</p>` : ""}
@@ -608,6 +609,31 @@ const ProductPage = (() => {
     }).catch(() => {});
 
     window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  // ── View count ─────────────────────────────────────────────
+  // Fetches the current view count from the Cloudflare KV edge endpoint
+  // and displays it inline with the rating row. Runs after renderProduct()
+  // so the #productViewCount element already exists in the DOM.
+  // Falls back silently if the endpoint is unavailable (local dev, etc.)
+  async function loadViewCount(id) {
+    const el = document.getElementById("productViewCount");
+    if (!el) return;
+    try {
+      const res = await fetch(`/product/${encodeURIComponent(id)}/views`);
+      if (!res.ok) throw new Error("no data");
+      const { views } = await res.json();
+      if (!views && views !== 0) throw new Error("empty");
+      const formatted = views >= 1000
+        ? `${(views / 1000).toFixed(1).replace(/\.0$/, "")}k`
+        : String(views);
+      el.textContent = `${formatted} views`;
+    } catch {
+      // Hide the separator too if count unavailable
+      const sep = document.querySelector(".product-view-sep");
+      if (sep) sep.style.display = "none";
+      el.style.display = "none";
+    }
   }
 
   // ── Related products ───────────────────────────────────────
